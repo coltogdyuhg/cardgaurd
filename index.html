@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CardGuard Dashboard</title>
+<!-- Tailwind CSS CDN for additional styling capabilities -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+/* Inter font import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+body, html {
+margin: 0;
+padding: 0;
+font-family: 'Inter', sans-serif; /* Use Inter font */
+height: 100%;
+overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Splash screen styles */
+.splash {
+background-color: #005BAC;
+color: white;
+height: 100vh;
+width: 100vw;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+transition: opacity 1s ease;
+position: fixed; /* Ensure it covers the whole screen */
+top: 0;
+left: 0;
+z-index: 1000; /* High z-index to be on top */
+}
+
+.logo {
+width: 150px;
+margin-bottom: 20px;
+}
+
+.slogan {
+font-size: 1.2rem;
+margin-bottom: 40px;
+}
+
+.hourglass {
+width: 40px;
+height: 40px;
+border: 4px solid white;
+border-radius: 50%;
+position: relative;
+animation: spin 1.5s linear infinite;
+}
+
+.hourglass::before {
+content: "";
+position: absolute;
+top: 10px;
+left: 10px;
+width: 20px;
+height: 20px;
+background: white;
+border-radius: 50%;
+opacity: 0.6;
+animation: sand-flow 1.5s infinite alternate;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+@keyframes sand-flow {
+0% { transform: scale(1); opacity: 0.6; }
+100% { transform: scale(0.3); opacity: 0.2; }
+}
+
+.fade-out {
+opacity: 0;
+}
+
+/* Dashboard layout */
+.dashboard {
+display: none; /* Hidden by default, shown after splash */
+min-height: 100vh; /* Use min-height to allow content to expand */
+background-color: #f0f2f5; /* Light grey background for main content */
+display: flex; /* Ensure flex layout is always active for sidebar/main */
+flex-direction: column; /* Stack sidebar and main for mobile */
+}
+
+@media (min-width: 768px) { /* Desktop layout */
+.dashboard {
+flex-direction: row;
+}
+}
+
+.sidebar {
+width: 100%; /* Full width on mobile */
+background-color: #005BAC;
+padding: 20px;
+box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+color: white;
+flex-shrink: 0; /* Prevent sidebar from shrinking */
+}
+
+@media (min-width: 768px) {
+.sidebar {
+width: 200px; /* Fixed width on desktop */
+height: 100vh; /* Full height on desktop */
+position: sticky; /* Keep sidebar in place */
+top: 0;
+}
+}
+
+.sidebar h2 {
+font-size: 18px;
+margin-bottom: 20px;
+color: white;
+}
+
+.sidebar ul {
+list-style: none;
+padding: 0;
+}
+
+.sidebar ul li {
+margin: 15px 0;
+cursor: pointer;
+color: white;
+font-weight: 500;
+transition: color 0.3s;
+display: flex;
+align-items: center;
+gap: 10px; /* Space between icon and text */
+}
+
+.sidebar ul li.active,
+.sidebar ul li:hover {
+color: #cce4ff;
+}
+
+.main {
+flex-grow: 1;
+padding: 30px;
+position: relative;
+background-color: #f0f2f5; /* Match light grey background */
+}
+
+.top-right {
+position: absolute;
+top: 20px;
+right: 30px;
+font-weight: bold;
+font-size: 18px;
+color: #555;
+}
+
+/* Trial/Subscription List and Form Styling */
+.section-title {
+font-size: 2rem;
+font-weight: bold;
+color: #333;
+margin-bottom: 25px;
+text-align: center;
+}
+
+.form-container, .list-container, .content-card { /* Added content-card for contact page */
+background-color: #ffffff;
+border-radius: 12px;
+padding: 25px;
+margin-bottom: 30px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.grid-layout { /* Renamed for reusability */
+display: grid;
+grid-template-columns: 1fr;
+gap: 20px;
+}
+
+@media (min-width: 640px) { /* sm breakpoint for Tailwind */
+.grid-layout {
+grid-template-columns: repeat(2, 1fr);
+}
+}
+
+.form-group label {
+display: block;
+margin-bottom: 8px;
+font-weight: 600;
+color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group input[type="number"],
+.form-group input[type="url"],
+.form-group textarea {
+width: 100%;
+padding: 12px;
+border: 1px solid #ddd;
+border-radius: 8px;
+font-size: 1rem;
+box-sizing: border-box; /* Include padding in width */
+background-color: #f9f9f9;
+transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+border-color: #005BAC;
+box-shadow: 0 0 0 3px rgba(0, 91, 172, 0.2);
+outline: none;
+}
+
+.submit-button {
+background-color: #005BAC;
+color: white;
+padding: 12px 25px;
+border: none;
+border-radius: 8px;
+font-size: 1.1rem;
+cursor: pointer;
+transition: background-color 0.3s, transform 0.2s;
+width: 100%;
+margin-top: 15px;
+}
+
+@media (min-width: 640px) {
+.submit-button {
+width: auto;
+}
+}
+
+.submit-button:hover {
+background-color: #004a8c;
+transform: translateY(-2px);
+}
+
+/* Item Card Styles (reused for both trials and subscriptions) */
+.item-card { /* Renamed from trial-card */
+background-color: #f8f8f8;
+border-radius: 12px;
+padding: 20px;
+box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+display: flex;
+flex-direction: column;
+gap: 15px;
+transition: transform 0.2s ease-in-out;
+}
+
+.item-card:hover {
+transform: translateY(-5px);
+}
+
+.item-card.ending-soon {
+border: 2px solid #ffaa00; /* Orange for ending soon */
+background-color: #fffbe6;
+}
+
+.item-card.ended {
+border: 2px solid #ff4d4d; /* Red for ended */
+background-color: #ffebe6;
+}
+
+.item-card.canceled {
+border: 2px solid #4CAF50; /* Green for canceled */
+opacity: 0.7;
+background-color: #e6ffed;
+}
+
+.item-card-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.item-card-title {
+font-size: 1.5rem;
+font-weight: 700;
+color: #333;
+}
+
+.item-card.canceled .item-card-title {
+text-decoration: line-through;
+color: #666;
+}
+
+.item-card-status {
+font-weight: 600;
+font-size: 1.1rem;
+}
+
+.item-card-status.ending-soon {
+color: #ffaa00;
+}
+
+.item-card-status.ended {
+color: #ff4d4d;
+}
+
+.item-card-status.active {
+color: #005BAC;
+}
+
+.item-card-status.canceled {
+color: #4CAF50;
+}
+.item-card-status.ongoing { /* New status for subscriptions */
+color: #005BAC;
+}
+
+
+.item-card-details {
+color: #666;
+font-size: 0.95rem;
+}
+
+.item-card-notes {
+color: #888;
+font-size: 0.85rem;
+font-style: italic;
+}
+
+.item-card-actions {
+display: flex;
+flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+gap: 10px;
+margin-top: 10px;
+}
+
+.action-button {
+padding: 8px 15px;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+font-size: 0.9rem;
+transition: background-color 0.3s, transform 0.2s;
+}
+
+.action-button.cancel-link {
+background-color: #007bff;
+color: white;
+}
+.action-button.cancel-link:hover {
+background-color: #0056b3;
+transform: translateY(-1px);
+}
+
+.action-button.mark-button {
+background-color: #28a745; /* Green for mark as canceled */
+color: white;
+}
+.action-button.mark-button.active {
+background-color: #ffc107; /* Yellow for mark as active */
+color: #333;
+}
+.action-button.mark-button:hover {
+background-color: #218838;
+transform: translateY(-1px);
+}
+.action-button.mark-button.active:hover {
+background-color: #e0a800;
+transform: translateY(-1px);
+}
+
+.action-button.delete-button {
+background-color: #dc3545;
+color: white;
+}
+.action-button.delete-button:hover {
+background-color: #c82333;
+transform: translateY(-1px);
+}
+
+/* Custom Modal Styles */
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 100vh;
+background-color: rgba(0, 0, 0, 0.7);
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 2000; /* Above splash screen */
+}
+
+.modal-content {
+background-color: white;
+padding: 30px;
+border-radius: 12px;
+box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+max-width: 400px;
+width: 90%;
+text-align: center;
+position: relative;
+}
+
+.modal-message {
+font-size: 1.1rem;
+margin-bottom: 25px;
+color: #333;
+}
+
+.modal-buttons {
+display: flex;
+justify-content: center;
+gap: 15px;
+}
+
+.modal-button {
+padding: 10px 20px;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-size: 1rem;
+transition: background-color 0.3s, transform 0.2s;
+}
+
+.modal-button.confirm {
+background-color: #005BAC;
+color: white;
+}
+.modal-button.confirm:hover {
+background-color: #004a8c;
+transform: translateY(-1px);
+}
+
+.modal-button.cancel {
+background-color: #6c757d;
+color: white;
+}
+.modal-button.cancel:hover {
+background-color: #5a6268;
+transform: translateY(-1px);
+}
+
+.user-id-display {
+background-color: rgba(0, 0, 0, 0.1);
+padding: 8px 12px;
+border-radius: 6px;
+font-size: 0.85rem;
+color: #eee;
+margin-top: 20px;
+text-align: center;
+word-break: break-all; /* Ensure long IDs wrap */
+}
+
+/* Footer styles */
+.dashboard-footer {
+text-align: center;
+padding: 20px;
+color: #666;
+font-size: 0.9rem;
+background-color: #f0f2f5; /* Match main content background */
+margin-top: 30px;
+}
+
+/* Loading Overlay Styles */
+.loading-overlay {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(255, 255, 255, 0.8);
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 100; /* Above content, below modals */
+transition: opacity 0.3s ease-in-out;
+opacity: 0;
+visibility: hidden;
+}
+
+.loading-overlay.visible {
+opacity: 1;
+visibility: visible;
+}
+
+.spinner {
+border: 4px solid rgba(0, 91, 172, 0.1);
+border-top: 4px solid #005BAC;
+border-radius: 50%;
+width: 40px;
+height: 40px;
+animation: spin-spinner 0.8s linear infinite;
+}
+
+@keyframes spin-spinner {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+/* Contact Page Specific Styles */
+.contact-card {
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+padding: 40px;
+}
+.contact-card .logo-image {
+max-width: 200px;
+height: auto;
+margin-bottom: 25px;
+}
+.contact-card p {
+font-size: 1.1rem;
+color: #555;
+margin-bottom: 10px;
+}
+.contact-card a {
+color: #005BAC;
+text-decoration: underline;
+font-weight: 600;
+}
+.contact-card .response-time {
+font-size: 0.9rem;
+color: #888;
+margin-top: 5px;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Splash screen -->
+<div class="splash" id="splashScreen">
+<!-- Updated logo from user's provided image -->
+<img src="ChatGPT Image Jun 22, 2025, 07_56_56 PM.jpg" alt="CardGuard Logo" class="logo"/>
+<div class="slogan">Updates on your trials in real time</div>
+<div class="hourglass"></div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+<div class="sidebar">
+<h2>Menu</h2>
+<ul>
+<li id="menuDashboard" class="active">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+Dashboard
+</li>
+<li id="menuSubscriptions">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="lucide lucide-credit-card"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+Subscriptions
+</li>
+<li id="menuContact">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="lucide lucide-mail"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+Contact CardGuard
+</li>
+<li>
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.78 1.35a2 2 0 0 0 .73 2.73l.04.04a2 2 0 0 1 0 2.83l-.04-.04a2 2 0 0 0-.73 2.73l.78 1.35a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.78-1.35a2 2 0 0 0-.73-2.73l-.04-.04a2 2 0 0 1 0-2.83l-.04-.04a2 2 0 0 0 .73-2.73l-.78-1.35a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+CardGuard 2025
+</li>
+</ul>
+<div id="userIdDisplay" class="user-id-display"></div>
+</div>
+
+<div class="main">
+<div class="top-right" id="currentPageTitle">Dashboard</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+<div class="spinner"></div>
+</div>
+
+<!-- Dashboard (Trials) Section -->
+<div id="dashboardContent">
+<section id="addTrialSection" class="form-container">
+<h2 class="section-title">Add New Trial</h2>
+<form id="addTrialForm" class="grid-layout">
+<div class="form-group">
+<label for="serviceName">Service Name:</label>
+<input type="text" id="serviceName" placeholder="e.g., Netflix, Spotify" required />
+</div>
+<div class="form-group">
+<label for="startDate">Trial Start Date:</label>
+<input type="date" id="startDate" required />
+</div>
+<div class="form-group">
+<label for="startTime">Trial Start Time:</label>
+<input type="time" id="startTime" required />
+</div>
+<div class="form-group">
+<label for="trialLength">Trial Length (days):</label>
+<input type="number" id="trialLength" placeholder="e.g., 7, 30" min="1" required />
+</div>
+<div class="form-group">
+<label for="cancellationLink">Cancellation Link (optional):</label>
+<input type="url" id="cancellationLink" placeholder="e.g., https://service.com/cancel" />
+</div>
+<div class="form-group col-span-1 md:col-span-2">
+<label for="notes">Notes (optional):</label>
+<textarea id="notes" rows="3" placeholder="Any specific details about this trial..."></textarea>
+</div>
+<div class="form-group col-span-1 md:col-span-2 text-center">
+<button type="submit" class="submit-button">Add Trial</button>
+</div>
+</form>
+</section>
+
+<section id="yourTrialsSection" class="list-container">
+<h2 class="section-title">Your Trials</h2>
+<div id="trialsList" class="grid-layout">
+<p class="text-center text-gray-500 col-span-1 md:col-span-2" id="noTrialsMessage">No trials added yet. Add one above!</p>
+</div>
+</section>
+</div>
+
+<!-- Subscriptions Section (initially hidden) -->
+<div id="subscriptionsContent" class="hidden">
+<section id="addSubscriptionSection" class="form-container">
+<h2 class="section-title">Add New Subscription</h2>
+<form id="addSubscriptionForm" class="grid-layout">
+<div class="form-group">
+<label for="subServiceName">Service Name:</label>
+<input type="text" id="subServiceName" placeholder="e.g., Netflix, Spotify Premium" required />
+</div>
+<div class="form-group">
+<label for="subStartDate">Subscription Start Date:</label>
+<input type="date" id="subStartDate" required />
+</div>
+<div class="form-group col-span-1 md:col-span-2">
+<label for="subNotes">Notes (optional):</label>
+<textarea id="subNotes" rows="3" placeholder="Billing cycle, cost, etc."></textarea>
+</div>
+<div class="form-group col-span-1 md:col-span-2 text-center">
+<button type="submit" class="submit-button">Add Subscription</button>
+</div>
+</form>
+</section>
+
+<section id="yourSubscriptionsSection" class="list-container">
+<h2 class="section-title">Your Subscriptions</h2>
+<div id="subscriptionsList" class="grid-layout">
+<p class="text-center text-gray-500 col-span-1 md:col-span-2" id="noSubscriptionsMessage">No subscriptions added yet. Add one above!</p>
+</div>
+</section>
+</div>
+
+<!-- Contact CardGuard Section (initially hidden) -->
+<div id="contactContent" class="hidden">
+<section id="contactCardGuardSection" class="content-card">
+<h2 class="section-title">Contact CardGuard</h2>
+<!-- Updated logo from user's provided image -->
+<img src="ChatGPT Image Jun 22, 2025, 07_56_56 PM.jpg" alt="CardGuard Logo" class="logo-image"/>
+<p>For support or inquiries, please email us at:</p>
+<p><a href="mailto:cardgaurd@gmail.com">cardgaurd@gmail.com</a></p>
+<p class="response-time">(Takes 5-7 business days to respond)</p>
+</section>
+</div>
+
+</div>
+</div>
+
+<!-- Custom Modal HTML Structure -->
+<div id="customModal" class="modal-overlay hidden">
+<div class="modal-content">
+<p id="modalMessage" class="modal-message"></p>
+<div id="modalButtons" class="modal-buttons">
+<button id="modalConfirmBtn" class="modal-button confirm hidden">OK</button>
+<button id="modalCancelBtn" class="modal-button cancel hidden">Cancel</button>
+</div>
+</div>
+</div>
+
+<footer class="dashboard-footer">
+<p>
+Disclaimer: CardGuard is a reminder tool. It does not automatically cancel subscriptions.
+You are responsible for reviewing and managing your free trials and subscriptions.
+</p>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+
+// Firebase Initialization (Global Variables)
+let app, db, auth;
+let userId = null;
+let appName = 'default-app-id'; // Default, will be updated by __app_id
+let trialIntervals = {}; // Store intervals for countdowns
+
+// DOM Elements - General
+const splashScreen = document.getElementById('splashScreen');
+const dashboard = document.getElementById('dashboard');
+const currentPageTitle = document.getElementById('currentPageTitle');
+const userIdDisplay = document.getElementById('userIdDisplay');
+const menuDashboard = document.getElementById('menuDashboard');
+const menuSubscriptions = document.getElementById('menuSubscriptions');
+const menuContact = document.getElementById('menuContact');
+const loadingOverlay = document.getElementById('loadingOverlay');
+
+// DOM Elements - Dashboard (Trials)
+const dashboardContent = document.getElementById('dashboardContent');
+const addTrialForm = document.getElementById('addTrialForm');
+const trialsList = document.getElementById('trialsList');
+const noTrialsMessage = document.getElementById('noTrialsMessage');
+const serviceNameInput = document.getElementById('serviceName');
+const startDateInput = document.getElementById('startDate');
+const startTimeInput = document.getElementById('startTime');
+const trialLengthInput = document.getElementById('trialLength');
+const cancellationLinkInput = document.getElementById('cancellationLink');
+const notesInput = document.getElementById('notes');
+
+// DOM Elements - Subscriptions
+const subscriptionsContent = document.getElementById('subscriptionsContent');
+const addSubscriptionForm = document.getElementById('addSubscriptionForm');
+const subscriptionsList = document.getElementById('subscriptionsList');
+const noSubscriptionsMessage = document.getElementById('noSubscriptionsMessage');
+const subServiceNameInput = document.getElementById('subServiceName');
+const subStartDateInput = document.getElementById('subStartDate');
+const subNotesInput = document.getElementById('subNotes');
+
+// DOM Elements - Contact CardGuard
+const contactContent = document.getElementById('contactContent');
+
+// Custom Modal Elements
+const customModal = document.getElementById('customModal');
+const modalMessageElem = document.getElementById('modalMessage');
+const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+const modalCancelBtn = document.getElementById('modalCancelBtn');
+
+// --- Utility Functions ---
+
+/**
+* Displays a custom modal message.
+* @param {string} message The message to display.
+* @param {boolean} isConfirm If true, shows OK and Cancel buttons for confirmation.
+* @returns {Promise<boolean>} Resolves with true if confirmed, false if canceled.
+*/
+function showMessage(message, isConfirm = false) {
+modalMessageElem.textContent = message;
+modalConfirmBtn.classList.remove('hidden');
+modalConfirmBtn.textContent = 'OK'; // Default text for message
+modalCancelBtn.classList.add('hidden'); // Hide cancel button by default
+
+if (isConfirm) {
+modalConfirmBtn.textContent = 'Confirm';
+modalCancelBtn.classList.remove('hidden');
+}
+
+customModal.classList.remove('hidden');
+
+return new Promise((resolve) => {
+modalConfirmBtn.onclick = () => {
+customModal.classList.add('hidden');
+resolve(true);
+};
+modalCancelBtn.onclick = () => {
+customModal.classList.add('hidden');
+resolve(false);
+};
+});
+}
+
+/**
+* Calculates the number of days, hours, and minutes remaining for a trial.
+* @param {string} start Date string (YYYY-MM-DD)
+* @param {string} time Time string (HH:MM)
+* @param {number} length Trial length in days
+* @returns {object} An object with { days, hours, minutes, totalMilliseconds, ended }
+*/
+function calculateTimeRemaining(start, time, length) {
+if (!start || !length || !time) {
+return { days: 'N/A', hours: 'N/A', minutes: 'N/A', totalMilliseconds: 0, ended: true };
+}
+
+const startDateString = `${start}T${time}:00`;
+const startDateObj = new Date(startDateString);
+const trialEndDateObj = new Date(startDateObj.getTime() + parseInt(length) * 24 * 60 * 60 * 1000);
+
+const now = new Date();
+const diffTime = trialEndDateObj.getTime() - now.getTime();
+
+if (diffTime <= 0) {
+return { days: 0, hours: 0, minutes: 0, totalMilliseconds: 0, ended: true };
+}
+
+const totalSeconds = Math.floor(diffTime / 1000);
+const days = Math.floor(totalSeconds / (3600 * 24));
+const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+return { days, hours, minutes, totalMilliseconds: diffTime, ended: false };
+}
+
+/**
+* Formats a date string to a readable format.
+* @param {string} dateString
+* @param {string} [timeString] Optional time string (HH:MM)
+* @returns {string} Formatted date
+*/
+function formatDate(dateString, timeString = null) {
+if (!dateString) return 'N/A';
+const date = new Date(dateString);
+let formatted = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+if (timeString) {
+const [hours, minutes] = timeString.split(':');
+const dateWithTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes);
+formatted += ` at ${dateWithTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+}
+return formatted;
+}
+
+// --- Firebase & App Initialization ---
+
+document.addEventListener('DOMContentLoaded', async () => {
+// Splash transition
+setTimeout(() => {
+splashScreen.classList.add('fade-out');
+setTimeout(() => {
+splashScreen.style.display = 'none';
+dashboard.style.display = 'flex'; // Show dashboard after splash
+showSection('dashboard'); // Show dashboard content by default
+}, 1000);
+}, 4000); // 4 seconds splash screen
+
+try {
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+app = initializeApp(firebaseConfig);
+db = getFirestore(app);
+auth = getAuth(app);
+
+appName = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+// Authenticate user
+if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+await signInWithCustomToken(auth, __initial_auth_token);
+} else {
+await signInAnonymously(auth);
+}
+
+// Set up auth state listener
+onAuthStateChanged(auth, (user) => {
+if (user) {
+userId = user.uid;
+console.log("Authenticated user ID:", userId);
+userIdDisplay.textContent = `User ID: ${userId}`;
+setupFirestoreListeners(); // Start listening to Firestore once authenticated
+} else {
+userId = crypto.randomUUID(); // Fallback for unauthenticated users, though Firebase auth should handle this
+console.log("No user authenticated, using random ID:", userId);
+userIdDisplay.textContent = `User ID: ${userId} (Anonymous)`;
+setupFirestoreListeners(); // Still set up listener for anonymous ID
+}
+});
+
+} catch (error) {
+console.error("Error initializing Firebase:", error);
+showMessage("Failed to initialize CardGuard. Please try again later.");
+}
+});
+
+/**
+* Clears all active countdown intervals.
+*/
+function clearAllTrialIntervals() {
+for (const intervalId in trialIntervals) {
+clearInterval(trialIntervals[intervalId]);
+}
+trialIntervals = {};
+}
+
+/**
+* Sets up all Firestore snapshot listeners (for trials and subscriptions).
+*/
+function setupFirestoreListeners() {
+if (db && userId) {
+console.log("Setting up Firestore listeners for userId:", userId);
+
+// Clear existing intervals before setting up new listeners
+clearAllTrialIntervals();
+
+// Trials Listener
+const trialsCollectionRef = collection(db, `artifacts/${appName}/users/${userId}/trials`);
+onSnapshot(query(trialsCollectionRef), (snapshot) => {
+const fetchedTrials = snapshot.docs.map(doc => ({
+id: doc.id,
+...doc.data()
+}));
+renderTrials(fetchedTrials);
+console.log("Trials fetched:", fetchedTrials);
+}, (error) => {
+console.error("Error fetching trials:", error);
+showMessage("Failed to fetch trials. Please check your connection.");
+});
+
+// Subscriptions Listener
+const subscriptionsCollectionRef = collection(db, `artifacts/${appName}/users/${userId}/subscriptions`);
+onSnapshot(query(subscriptionsCollectionRef), (snapshot) => {
+const fetchedSubscriptions = snapshot.docs.map(doc => ({
+id: doc.id,
+...doc.data()
+}));
+renderSubscriptions(fetchedSubscriptions);
+console.log("Subscriptions fetched:", fetchedSubscriptions);
+}, (error) => {
+console.error("Error fetching subscriptions:", error);
+showMessage("Failed to fetch subscriptions. Please check your connection.");
+});
+
+} else {
+console.log("Firestore or userId not ready to set up listeners.");
+}
+}
+
+// --- Navigation ---
+
+menuDashboard.addEventListener('click', () => showSection('dashboard'));
+menuSubscriptions.addEventListener('click', () => showSection('subscriptions'));
+menuContact.addEventListener('click', () => showSection('contact'));
+
+/**
+* Shows the specified content section and updates sidebar active state, with a loading overlay.
+* @param {'dashboard'|'subscriptions'|'contact'} sectionToShow
+*/
+function showSection(sectionToShow) {
+// Show loading overlay
+loadingOverlay.classList.add('visible');
+
+// Hide all content sections initially
+dashboardContent.classList.add('hidden');
+subscriptionsContent.classList.add('hidden');
+contactContent.classList.add('hidden');
+
+// Remove active class from all menu items
+menuDashboard.classList.remove('active');
+menuSubscriptions.classList.remove('active');
+menuContact.classList.remove('active');
+
+// A small delay to ensure the loading animation is seen,
+// especially if content loads instantly from cache.
+setTimeout(() => {
+if (sectionToShow === 'dashboard') {
+dashboardContent.classList.remove('hidden');
+menuDashboard.classList.add('active');
+currentPageTitle.textContent = 'Dashboard';
+} else if (sectionToShow === 'subscriptions') {
+subscriptionsContent.classList.remove('hidden');
+menuSubscriptions.classList.add('active');
+currentPageTitle.textContent = 'Subscriptions';
+} else if (sectionToShow === 'contact') {
+contactContent.classList.remove('hidden');
+menuContact.classList.add('active');
+currentPageTitle.textContent = 'Contact CardGuard';
+}
+// Hide loading overlay after content is displayed
+loadingOverlay.classList.remove('visible');
+}, 300); // Adjust delay as needed, e.g., 300ms for a brief flicker
+}
+
+// --- Trial Event Handlers ---
+
+addTrialForm.addEventListener('submit', handleAddTrial);
+
+/**
+* Handles adding a new trial to Firestore.
+* @param {Event} e
+*/
+async function handleAddTrial(e) {
+e.preventDefault();
+
+const serviceName = serviceNameInput.value.trim();
+const startDate = startDateInput.value;
+const startTime = startTimeInput.value;
+const trialLength = parseInt(trialLengthInput.value);
+const cancellationLink = cancellationLinkInput.value.trim();
+const notes = notesInput.value.trim();
+
+if (!serviceName || !startDate || !startTime || isNaN(trialLength) || trialLength <= 0) {
+showMessage("Please fill in Service Name, Start Date, Start Time, and a valid Trial Length (positive number).");
+return;
+}
+
+if (!db || !userId) {
+showMessage("CardGuard is not ready. Please wait or refresh the page.");
+return;
+}
+
+try {
+await addDoc(collection(db, `artifacts/${appName}/users/${userId}/trials`), {
+serviceName,
+startDate,
+startTime,
+trialLength,
+cancellationLink,
+notes,
+isCanceled: false,
+createdAt: new Date().toISOString()
+});
+showMessage("Trial added successfully!");
+addTrialForm.reset(); // Clear form
+} catch (error) {
+console.error("Error adding trial document: ", error);
+showMessage("Failed to add trial. " + error.message);
+}
+}
+
+/**
+* Handles marking a trial as canceled or active.
+* @param {string} id Trial document ID
+* @param {boolean} isCanceled Current canceled status
+*/
+async function handleMarkAsCanceled(id, isCanceled) {
+if (!db || !userId) {
+showMessage("CardGuard is not ready. Please wait or refresh the page.");
+return;
+}
+const confirmed = await showMessage(`Are you sure you want to mark this trial as ${!isCanceled ? 'Canceled' : 'Active'}?`, true);
+if (!confirmed) {
+return;
+}
+try {
+const trialDocRef = doc(db, `artifacts/${appName}/users/${userId}/trials`, id);
+await updateDoc(trialDocRef, {
+isCanceled: !isCanceled
+});
+showMessage(`Trial marked as ${!isCanceled ? 'Canceled' : 'Active'}.`);
+} catch (error) {
+console.error("Error updating trial document: ", error);
+showMessage("Failed to update trial status. " + error.message);
+}
+}
+
+/**
+* Handles deleting a trial.
+* @param {string} id Trial document ID
+*/
+async function handleDeleteTrial(id) {
+if (!db || !userId) {
+showMessage("CardGuard is not ready. Please wait or refresh the page.");
+return;
+}
+
+const confirmed = await showMessage("Are you sure you want to delete this trial?", true);
+if (!confirmed) {
+return;
+}
+
+try {
+const trialDocRef = doc(db, `artifacts/${appName}/users/${userId}/trials`, id);
+await deleteDoc(trialDocRef);
+showMessage("Trial deleted successfully.");
+} catch (error) {
+console.error("Error deleting trial document: ", error);
+showMessage("Failed to delete trial. " + error.message);
+}
+}
+
+// --- Subscription Event Handlers ---
+
+addSubscriptionForm.addEventListener('submit', handleAddSubscription);
+
+/**
+* Handles adding a new subscription to Firestore.
+* @param {Event} e
+*/
+async function handleAddSubscription(e) {
+e.preventDefault();
+
+const serviceName = subServiceNameInput.value.trim();
+const startDate = subStartDateInput.value;
+const notes = subNotesInput.value.trim();
+
+if (!serviceName || !startDate) {
+showMessage("Please fill in Service Name and Start Date for the subscription.");
+return;
+}
+
+if (!db || !userId) {
+showMessage("CardGuard is not ready. Please wait or refresh the page.");
+return;
+}
+
+try {
+await addDoc(collection(db, `artifacts/${appName}/users/${userId}/subscriptions`), {
+serviceName,
+startDate,
+notes,
+createdAt: new Date().toISOString()
+});
+showMessage("Subscription added successfully!");
+addSubscriptionForm.reset(); // Clear form
+} catch (error) {
+console.error("Error adding subscription document: ", error);
+showMessage("Failed to add subscription. " + error.message);
+}
+}
+
+/**
+* Handles deleting a subscription.
+* @param {string} id Subscription document ID
+*/
+async function handleDeleteSubscription(id) {
+if (!db || !userId) {
+showMessage("CardGuard is not ready. Please wait or refresh the page.");
+return;
+}
+
+const confirmed = await showMessage("Are you sure you want to delete this subscription?", true);
+if (!confirmed) {
+return;
+}
+
+try {
+const subDocRef = doc(db, `artifacts/${appName}/users/${userId}/subscriptions`, id);
+await deleteDoc(subDocRef);
+showMessage("Subscription deleted successfully.");
+} catch (error) {
+console.error("Error deleting subscription document: ", error);
+showMessage("Failed to delete subscription. " + error.message);
+}
+}
+
+// --- Rendering Functions ---
+
+/**
+* Updates the countdown display for a specific trial.
+* @param {string} trialId The ID of the trial.
+* @param {string} startDate The trial's start date.
+* @param {string} startTime The trial's start time.
+* @param {number} trialLength The trial's length in days.
+* @param {boolean} isCanceled The current cancellation status of the trial.
+* @param {HTMLElement} countdownElement The element to update with the countdown.
+* @param {HTMLElement} statusElement The element to update with the status class.
+*/
+function updateTrialCountdown(trialId, startDate, startTime, trialLength, isCanceled, countdownElement, statusElement) {
+    const update = () => {
+        if (isCanceled) { // If already canceled, no countdown needed
+            countdownElement.textContent = 'Canceled';
+            statusElement.classList.add('canceled');
+            statusElement.classList.remove('active', 'ending-soon', 'ended');
+            if (trialIntervals[trialId]) {
+                clearInterval(trialIntervals[trialId]);
+                delete trialIntervals[trialId];
+            }
+            return;
+        }
+
+        const { days, hours, minutes, ended } = calculateTimeRemaining(startDate, startTime, trialLength);
+
+        if (ended) {
+            countdownElement.textContent = 'Trial Ended';
+            statusElement.classList.add('ended');
+            statusElement.classList.remove('active', 'ending-soon', 'canceled');
+            // Clear the interval when the trial ends
+            if (trialIntervals[trialId]) {
+                clearInterval(trialIntervals[trialId]);
+                delete trialIntervals[trialId];
+            }
+        } else {
+            // Update the countdown text
+            let countdownText = '';
+            if (days > 0) {
+                countdownText += `${days}d `;
+            }
+            if (hours > 0 || days > 0) {
+                countdownText += `${hours}h `;
+            }
+            countdownText += `${minutes}m`;
+
+            countdownElement.textContent = `Time left: ${countdownText.trim()}`;
+
+            // Update status class based on remaining days (and hours if days is 0)
+            if (days < 7) { // Less than 7 full days
+                statusElement.classList.add('ending-soon');
+                statusElement.classList.remove('active', 'ended', 'canceled');
+            } else {
+                statusElement.classList.add('active');
+                statusElement.classList.remove('ending-soon', 'ended', 'canceled');
+            }
+        }
+    };
+
+    // Run immediately to set initial state
+    update();
+
+    // Clear any existing interval for this trial to prevent duplicates
+    if (trialIntervals[trialId]) {
+        clearInterval(trialIntervals[trialId]);
+    }
+
+    // Set up a new interval to update every minute, only if not canceled and not already ended
+    if (!isCanceled) {
+        const { ended } = calculateTimeRemaining(startDate, startTime, trialLength);
+        if (!ended) {
+            trialIntervals[trialId] = setInterval(update, 60 * 1000); // Update every minute
+        }
+    }
+}
+
+/**
+* Renders the list of trials in the dashboard.
+* @param {Array<Object>} trials The array of trial objects from Firestore.
+*/
+function renderTrials(trials) {
+    trialsList.innerHTML = ''; // Clear existing trials
+
+    if (trials.length === 0) {
+        noTrialsMessage.style.display = 'block';
+        trialsList.appendChild(noTrialsMessage);
+        return;
+    } else {
+        noTrialsMessage.style.display = 'none';
+    }
+
+    // Sort trials: Active trials first (by totalMilliseconds remaining), then canceled, then ended.
+    const sortedTrials = trials.sort((a, b) => {
+        const timeA = calculateTimeRemaining(a.startDate, a.startTime, a.trialLength);
+        const timeB = calculateTimeRemaining(b.startDate, b.startTime, b.trialLength);
+
+        // Prioritize active (non-canceled, not ended) trials over others
+        const isActiveA = !a.isCanceled && !timeA.ended;
+        const isActiveB = !b.isCanceled && !timeB.ended;
+
+        if (isActiveA && !isActiveB) return -1; // A is active, B is not -> A comes first
+        if (!isActiveA && isActiveB) return 1;  // B is active, A is not -> B comes first
+
+        // If both are active, sort by totalMilliseconds remaining (ascending)
+        if (isActiveA && isActiveB) {
+            return timeA.totalMilliseconds - timeB.totalMilliseconds;
+        }
+
+        // If both are canceled, sort by createdAt (newest first, or keep as is)
+        if (a.isCanceled && b.isCanceled) {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Newest canceled first
+        }
+
+        // If both are ended, sort by createdAt (newest first, or keep as is)
+        if (timeA.ended && timeB.ended) {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Newest ended first
+        }
+
+        // Fallback: If one is canceled and the other is ended, put canceled first for visibility (user's action)
+        if (a.isCanceled && timeB.ended) return -1;
+        if (timeA.ended && b.isCanceled) return 1;
+
+        return 0; // Maintain original order if no specific sort applies
+    });
+
+
+    sortedTrials.forEach(trial => {
+        const trialCard = document.createElement('div');
+        // Initial status class, will be refined by updateTrialCountdown
+        let initialStatusClass = trial.isCanceled ? 'canceled' : 'active';
+        trialCard.classList.add('item-card', initialStatusClass);
+
+        trialCard.innerHTML = `
+<div class="item-card-header">
+<h3 class="item-card-title">${trial.serviceName}</h3>
+<span class="item-card-status ${initialStatusClass}" id="status-${trial.id}">${trial.isCanceled ? 'Canceled' : 'Active'}</span>
+</div>
+<div class="item-card-details">
+<p><strong>Start Date:</strong> ${formatDate(trial.startDate, trial.startTime)}</p>
+<p><strong>Trial Length:</strong> ${trial.trialLength} days</p>
+<p><strong class="countdown-label"></strong> <span class="countdown-text" id="countdown-${trial.id}"></span></p>
+</div>
+${trial.notes ? `<p class="item-card-notes"><strong>Notes:</strong> ${trial.notes}</p>` : ''}
+<div class="item-card-actions">
+${trial.cancellationLink && !trial.isCanceled ? `<a href="${trial.cancellationLink}" target="_blank" class="action-button cancel-link">Go to Cancellation Link</a>` : ''}
+<button class="action-button mark-button ${trial.isCanceled ? 'active' : ''}" data-id="${trial.id}" data-iscanceled="${trial.isCanceled}">
+${trial.isCanceled ? 'Mark as Active' : 'Mark as Canceled'}
+</button>
+<button class="action-button delete-button" data-id="${trial.id}">Delete</button>
+</div>
+`;
+        trialsList.appendChild(trialCard);
+
+        // Get the specific elements for this trial card to pass to the update function
+        const countdownElement = trialCard.querySelector(`#countdown-${trial.id}`);
+        const statusElement = trialCard.querySelector(`#status-${trial.id}`);
+
+        // Initialize and start the countdown for this trial
+        if (countdownElement && statusElement) {
+            updateTrialCountdown(trial.id, trial.startDate, trial.startTime, trial.trialLength, trial.isCanceled, countdownElement, statusElement);
+        }
+
+        // Add event listeners for buttons in the newly created card
+        trialCard.querySelector('.mark-button').addEventListener('click', (e) => {
+            const id = e.target.dataset.id;
+            const isCanceled = e.target.dataset.iscanceled === 'true'; // Convert string to boolean
+            handleMarkAsCanceled(id, isCanceled);
+        });
+
+        trialCard.querySelector('.delete-button').addEventListener('click', (e) => {
+            const id = e.target.dataset.id;
+            handleDeleteTrial(id);
+        });
+    });
+}
+
+/**
+* Renders the list of subscriptions.
+* @param {Array<Object>} subscriptions The array of subscription objects from Firestore.
+*/
+function renderSubscriptions(subscriptions) {
+    subscriptionsList.innerHTML = ''; // Clear existing subscriptions
+
+    if (subscriptions.length === 0) {
+        noSubscriptionsMessage.style.display = 'block';
+        subscriptionsList.appendChild(noSubscriptionsMessage);
+        return;
+    } else {
+        noSubscriptionsMessage.style.display = 'none';
+    }
+
+    subscriptions.forEach(sub => {
+        const subCard = document.createElement('div');
+        subCard.classList.add('item-card'); // No specific status classes like trials, generally 'ongoing'
+        subCard.innerHTML = `
+<div class="item-card-header">
+<h3 class="item-card-title">${sub.serviceName}</h3>
+<span class="item-card-status ongoing">Ongoing</span>
+</div>
+<div class="item-card-details">
+<p><strong>Start Date:</strong> ${formatDate(sub.startDate)}</p>
+</div>
+${sub.notes ? `<p class="item-card-notes"><strong>Notes:</strong> ${sub.notes}</p>` : ''}
+<div class="item-card-actions">
+<button class="action-button delete-button" data-id="${sub.id}">Delete</button>
+</div>
+`;
+        subscriptionsList.appendChild(subCard);
+
+        // Add event listener for the delete button
+        subCard.querySelector('.delete-button').addEventListener('click', (e) => {
+            const id = e.target.dataset.id;
+            handleDeleteSubscription(id);
+        });
+    });
+}
+</script>
+</body>
+</html>
