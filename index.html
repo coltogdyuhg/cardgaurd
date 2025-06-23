@@ -856,7 +856,8 @@ setupFirestoreListeners(); // Still set up listener for anonymous ID
 
 } catch (error) {
 console.error("Error initializing Firebase:", error);
-showMessage("Failed to initialize CardGuard. Please try again later.");
+// Changed error message for production environment
+showMessage("We're having trouble connecting. Please check your internet connection and try again.");
 }
 });
 
@@ -891,7 +892,7 @@ renderTrials(fetchedTrials);
 console.log("Trials fetched:", fetchedTrials);
 }, (error) => {
 console.error("Error fetching trials:", error);
-showMessage("Failed to fetch trials. Please check your connection.");
+showMessage("Failed to fetch trials. Please check your connection."); // Consider changing this one too if needed
 });
 
 // Subscriptions Listener
@@ -905,7 +906,7 @@ renderSubscriptions(fetchedSubscriptions);
 console.log("Subscriptions fetched:", fetchedSubscriptions);
 }, (error) => {
 console.error("Error fetching subscriptions:", error);
-showMessage("Failed to fetch subscriptions. Please check your connection.");
+showMessage("Failed to fetch subscriptions. Please check your connection."); // Consider changing this one too if needed
 });
 
 } else {
@@ -982,7 +983,8 @@ return;
 }
 
 if (!db || !userId) {
-showMessage("CardGuard is not ready. Please wait or refresh the page.");
+// Changed error message for production environment
+showMessage("CardGuard is still setting up. Please wait a moment.");
 return;
 }
 
@@ -1012,7 +1014,8 @@ showMessage("Failed to add trial. " + error.message);
 */
 async function handleMarkAsCanceled(id, isCanceled) {
 if (!db || !userId) {
-showMessage("CardGuard is not ready. Please wait or refresh the page.");
+// Changed error message for production environment
+showMessage("CardGuard is still setting up. Please wait a moment.");
 return;
 }
 const confirmed = await showMessage(`Are you sure you want to mark this trial as ${!isCanceled ? 'Canceled' : 'Active'}?`, true);
@@ -1037,7 +1040,8 @@ showMessage("Failed to update trial status. " + error.message);
 */
 async function handleDeleteTrial(id) {
 if (!db || !userId) {
-showMessage("CardGuard is not ready. Please wait or refresh the page.");
+// Changed error message for production environment
+showMessage("CardGuard is still setting up. Please wait a moment.");
 return;
 }
 
@@ -1077,7 +1081,8 @@ return;
 }
 
 if (!db || !userId) {
-showMessage("CardGuard is not ready. Please wait or refresh the page.");
+// Changed error message for production environment
+showMessage("CardGuard is still setting up. Please wait a moment.");
 return;
 }
 
@@ -1102,7 +1107,8 @@ showMessage("Failed to add subscription. " + error.message);
 */
 async function handleDeleteSubscription(id) {
 if (!db || !userId) {
-showMessage("CardGuard is not ready. Please wait or refresh the page.");
+// Changed error message for production environment
+showMessage("CardGuard is still setting up. Please wait a moment.");
 return;
 }
 
