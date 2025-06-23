@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CardGuard Dashboard</title>
-<!-- Tailwind CSS CDN for additional styling capabilities -->
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 /* Inter font import */
@@ -530,15 +529,12 @@ margin-top: 5px;
 </head>
 <body>
 
-<!-- Splash screen -->
 <div class="splash" id="splashScreen">
-<!-- Updated logo from user's provided image -->
-<img src="ChatGPT Image Jun 22, 2025, 07_56_56 PM.jpg" alt="CardGuard Logo" class="logo"/>
-<div class="slogan">Updates on your trials in real time</div>
+<img src="https://placehold.co/150x150/005BAC/FFFFFF?text=Logo" alt="CardGuard Logo" class="logo"/>
+<div class="slogan">Cancels all of your trials automatically</div>
 <div class="hourglass"></div>
 </div>
 
-<!-- Dashboard -->
 <div class="dashboard" id="dashboard">
 <div class="sidebar">
 <h2>Menu</h2>
@@ -566,12 +562,10 @@ CardGuard 2025
 <div class="main">
 <div class="top-right" id="currentPageTitle">Dashboard</div>
 
-<!-- Loading Overlay -->
 <div id="loadingOverlay" class="loading-overlay">
 <div class="spinner"></div>
 </div>
 
-<!-- Dashboard (Trials) Section -->
 <div id="dashboardContent">
 <section id="addTrialSection" class="form-container">
 <h2 class="section-title">Add New Trial</h2>
@@ -614,7 +608,6 @@ CardGuard 2025
 </section>
 </div>
 
-<!-- Subscriptions Section (initially hidden) -->
 <div id="subscriptionsContent" class="hidden">
 <section id="addSubscriptionSection" class="form-container">
 <h2 class="section-title">Add New Subscription</h2>
@@ -645,12 +638,10 @@ CardGuard 2025
 </section>
 </div>
 
-<!-- Contact CardGuard Section (initially hidden) -->
 <div id="contactContent" class="hidden">
 <section id="contactCardGuardSection" class="content-card">
 <h2 class="section-title">Contact CardGuard</h2>
-<!-- Updated logo from user's provided image -->
-<img src="ChatGPT Image Jun 22, 2025, 07_56_56 PM.jpg" alt="CardGuard Logo" class="logo-image"/>
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_4gT85d8xSg-2XqD_Vq6o_1k_c5-y1w_1Q&s" alt="CardGuard Logo" class="logo-image"/>
 <p>For support or inquiries, please email us at:</p>
 <p><a href="mailto:cardgaurd@gmail.com">cardgaurd@gmail.com</a></p>
 <p class="response-time">(Takes 5-7 business days to respond)</p>
@@ -660,7 +651,6 @@ CardGuard 2025
 </div>
 </div>
 
-<!-- Custom Modal HTML Structure -->
 <div id="customModal" class="modal-overlay hidden">
 <div class="modal-content">
 <p id="modalMessage" class="modal-message"></p>
@@ -856,8 +846,7 @@ setupFirestoreListeners(); // Still set up listener for anonymous ID
 
 } catch (error) {
 console.error("Error initializing Firebase:", error);
-// Changed error message for production environment
-showMessage("We're having trouble connecting. Please check your internet connection and try again.");
+showMessage("Failed to initialize CardGuard. Please try again later.");
 }
 });
 
@@ -892,7 +881,7 @@ renderTrials(fetchedTrials);
 console.log("Trials fetched:", fetchedTrials);
 }, (error) => {
 console.error("Error fetching trials:", error);
-showMessage("Failed to fetch trials. Please check your connection."); // Consider changing this one too if needed
+showMessage("Failed to fetch trials. Please check your connection.");
 });
 
 // Subscriptions Listener
@@ -906,7 +895,7 @@ renderSubscriptions(fetchedSubscriptions);
 console.log("Subscriptions fetched:", fetchedSubscriptions);
 }, (error) => {
 console.error("Error fetching subscriptions:", error);
-showMessage("Failed to fetch subscriptions. Please check your connection."); // Consider changing this one too if needed
+showMessage("Failed to fetch subscriptions. Please check your connection.");
 });
 
 } else {
@@ -983,8 +972,7 @@ return;
 }
 
 if (!db || !userId) {
-// Changed error message for production environment
-showMessage("CardGuard is still setting up. Please wait a moment.");
+showMessage("CardGuard is not ready. Please wait or refresh the page.");
 return;
 }
 
@@ -1014,8 +1002,7 @@ showMessage("Failed to add trial. " + error.message);
 */
 async function handleMarkAsCanceled(id, isCanceled) {
 if (!db || !userId) {
-// Changed error message for production environment
-showMessage("CardGuard is still setting up. Please wait a moment.");
+showMessage("CardGuard is not ready. Please wait or refresh the page.");
 return;
 }
 const confirmed = await showMessage(`Are you sure you want to mark this trial as ${!isCanceled ? 'Canceled' : 'Active'}?`, true);
@@ -1040,8 +1027,7 @@ showMessage("Failed to update trial status. " + error.message);
 */
 async function handleDeleteTrial(id) {
 if (!db || !userId) {
-// Changed error message for production environment
-showMessage("CardGuard is still setting up. Please wait a moment.");
+showMessage("CardGuard is not ready. Please wait or refresh the page.");
 return;
 }
 
@@ -1081,8 +1067,7 @@ return;
 }
 
 if (!db || !userId) {
-// Changed error message for production environment
-showMessage("CardGuard is still setting up. Please wait a moment.");
+showMessage("CardGuard is not ready. Please wait or refresh the page.");
 return;
 }
 
@@ -1107,8 +1092,7 @@ showMessage("Failed to add subscription. " + error.message);
 */
 async function handleDeleteSubscription(id) {
 if (!db || !userId) {
-// Changed error message for production environment
-showMessage("CardGuard is still setting up. Please wait a moment.");
+showMessage("CardGuard is not ready. Please wait or refresh the page.");
 return;
 }
 
@@ -1135,73 +1119,91 @@ showMessage("Failed to delete subscription. " + error.message);
 * @param {string} startDate The trial's start date.
 * @param {string} startTime The trial's start time.
 * @param {number} trialLength The trial's length in days.
-* @param {boolean} isCanceled The current cancellation status of the trial.
 * @param {HTMLElement} countdownElement The element to update with the countdown.
 * @param {HTMLElement} statusElement The element to update with the status class.
 */
-function updateTrialCountdown(trialId, startDate, startTime, trialLength, isCanceled, countdownElement, statusElement) {
-    const update = () => {
-        if (isCanceled) { // If already canceled, no countdown needed
-            countdownElement.textContent = 'Canceled';
-            statusElement.classList.add('canceled');
-            statusElement.classList.remove('active', 'ending-soon', 'ended');
-            if (trialIntervals[trialId]) {
-                clearInterval(trialIntervals[trialId]);
-                delete trialIntervals[trialId];
-            }
-            return;
-        }
+function updateTrialCountdown(trialId, startDate, startTime, trialLength, countdownElement, statusElement) {
+const update = () => {
+const { days, hours, minutes, ended } = calculateTimeRemaining(startDate, startTime, trialLength);
 
-        const { days, hours, minutes, ended } = calculateTimeRemaining(startDate, startTime, trialLength);
+if (ended) {
+countdownElement.textContent = 'Trial Ended';
+statusElement.classList.add('ended');
+statusElement.classList.remove('active', 'ending-soon');
+// Clear the interval when the trial ends
+if (trialIntervals[trialId]) {
+clearInterval(trialIntervals[trialId]);
+delete trialIntervals[trialId];
+}
+} else {
+countdownElement.textContent = `Ends in: ${days}d ${hours}h ${minutes}m`;
+if (days < 3) {
+statusElement.classList.add('ending-soon');
+statusElement.classList.remove('active');
+} else {
+statusElement.classList.add('active');
+statusElement.classList.remove('ending-soon');
+}
+statusElement.classList.remove('ended');
+}
+};
 
-        if (ended) {
-            countdownElement.textContent = 'Trial Ended';
-            statusElement.classList.add('ended');
-            statusElement.classList.remove('active', 'ending-soon', 'canceled');
-            // Clear the interval when the trial ends
-            if (trialIntervals[trialId]) {
-                clearInterval(trialIntervals[trialId]);
-                delete trialIntervals[trialId];
-            }
-        } else {
-            // Update the countdown text
-            let countdownText = '';
-            if (days > 0) {
-                countdownText += `${days}d `;
-            }
-            if (hours > 0 || days > 0) {
-                countdownText += `${hours}h `;
-            }
-            countdownText += `${minutes}m`;
+// Run immediately to set initial state
+update();
 
-            countdownElement.textContent = `Time left: ${countdownText.trim()}`;
+// Clear any existing interval for this trial to prevent duplicates
+if (trialIntervals[trialId]) {
+clearInterval(trialIntervals[trialId]);
+}
+// Update every minute for active trials
+trialIntervals[trialId] = setInterval(update, 60 * 1000); // Update every minute
+}
 
-            // Update status class based on remaining days (and hours if days is 0)
-            if (days < 7) { // Less than 7 full days
-                statusElement.classList.add('ending-soon');
-                statusElement.classList.remove('active', 'ended', 'canceled');
-            } else {
-                statusElement.classList.add('active');
-                statusElement.classList.remove('ending-soon', 'ended', 'canceled');
-            }
-        }
-    };
+/**
+* Creates and returns an HTML element for a single trial card.
+* @param {Object} trial The trial object.
+* @returns {HTMLElement} The created trial card element.
+*/
+function createTrialCard(trial) {
+const trialCard = document.createElement('div');
+trialCard.classList.add('item-card');
+if (trial.isCanceled) {
+trialCard.classList.add('canceled');
+}
 
-    // Run immediately to set initial state
-    update();
+trialCard.innerHTML = `
+<div class="item-card-header">
+<h3 class="item-card-title">${trial.serviceName}</h3>
+<span class="item-card-status" data-trial-id="${trial.id}"></span>
+</div>
+<div class="item-card-details">
+<p>Starts: ${formatDate(trial.startDate, trial.startTime)}</p>
+<p id="countdown-${trial.id}">Calculating...</p>
+<p>${trial.trialLength} day trial</p>
+${trial.cancellationLink ? `<p>Cancellation: <a href="${trial.cancellationLink}" target="_blank" class="text-blue-600 hover:underline">Link</a></p>` : ''}
+</div>
+${trial.notes ? `<p class="item-card-notes">Notes: ${trial.notes}</p>` : ''}
+<div class="item-card-actions">
+<button class="action-button mark-button ${trial.isCanceled ? 'active' : ''}" data-id="${trial.id}" data-canceled="${trial.isCanceled}">
+Mark as ${trial.isCanceled ? 'Active' : 'Canceled'}
+</button>
+<button class="action-button delete-button" data-id="${trial.id}">Delete</button>
+</div>
+`;
 
-    // Clear any existing interval for this trial to prevent duplicates
-    if (trialIntervals[trialId]) {
-        clearInterval(trialIntervals[trialId]);
-    }
+// Add event listeners
+trialCard.querySelector('.mark-button').addEventListener('click', (e) => {
+const id = e.target.dataset.id;
+const isCanceled = e.target.dataset.canceled === 'true';
+handleMarkAsCanceled(id, isCanceled);
+});
 
-    // Set up a new interval to update every minute, only if not canceled and not already ended
-    if (!isCanceled) {
-        const { ended } = calculateTimeRemaining(startDate, startTime, trialLength);
-        if (!ended) {
-            trialIntervals[trialId] = setInterval(update, 60 * 1000); // Update every minute
-        }
-    }
+trialCard.querySelector('.delete-button').addEventListener('click', (e) => {
+const id = e.target.dataset.id;
+handleDeleteTrial(id);
+});
+
+return trialCard;
 }
 
 /**
@@ -1209,141 +1211,101 @@ function updateTrialCountdown(trialId, startDate, startTime, trialLength, isCanc
 * @param {Array<Object>} trials The array of trial objects from Firestore.
 */
 function renderTrials(trials) {
-    trialsList.innerHTML = ''; // Clear existing trials
+// Clear all existing intervals before re-rendering
+clearAllTrialIntervals();
 
-    if (trials.length === 0) {
-        noTrialsMessage.style.display = 'block';
-        trialsList.appendChild(noTrialsMessage);
-        return;
-    } else {
-        noTrialsMessage.style.display = 'none';
-    }
+trialsList.innerHTML = ''; // Clear existing trials
 
-    // Sort trials: Active trials first (by totalMilliseconds remaining), then canceled, then ended.
-    const sortedTrials = trials.sort((a, b) => {
-        const timeA = calculateTimeRemaining(a.startDate, a.startTime, a.trialLength);
-        const timeB = calculateTimeRemaining(b.startDate, b.startTime, b.trialLength);
-
-        // Prioritize active (non-canceled, not ended) trials over others
-        const isActiveA = !a.isCanceled && !timeA.ended;
-        const isActiveB = !b.isCanceled && !timeB.ended;
-
-        if (isActiveA && !isActiveB) return -1; // A is active, B is not -> A comes first
-        if (!isActiveA && isActiveB) return 1;  // B is active, A is not -> B comes first
-
-        // If both are active, sort by totalMilliseconds remaining (ascending)
-        if (isActiveA && isActiveB) {
-            return timeA.totalMilliseconds - timeB.totalMilliseconds;
-        }
-
-        // If both are canceled, sort by createdAt (newest first, or keep as is)
-        if (a.isCanceled && b.isCanceled) {
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Newest canceled first
-        }
-
-        // If both are ended, sort by createdAt (newest first, or keep as is)
-        if (timeA.ended && timeB.ended) {
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Newest ended first
-        }
-
-        // Fallback: If one is canceled and the other is ended, put canceled first for visibility (user's action)
-        if (a.isCanceled && timeB.ended) return -1;
-        if (timeA.ended && b.isCanceled) return 1;
-
-        return 0; // Maintain original order if no specific sort applies
-    });
-
-
-    sortedTrials.forEach(trial => {
-        const trialCard = document.createElement('div');
-        // Initial status class, will be refined by updateTrialCountdown
-        let initialStatusClass = trial.isCanceled ? 'canceled' : 'active';
-        trialCard.classList.add('item-card', initialStatusClass);
-
-        trialCard.innerHTML = `
-<div class="item-card-header">
-<h3 class="item-card-title">${trial.serviceName}</h3>
-<span class="item-card-status ${initialStatusClass}" id="status-${trial.id}">${trial.isCanceled ? 'Canceled' : 'Active'}</span>
-</div>
-<div class="item-card-details">
-<p><strong>Start Date:</strong> ${formatDate(trial.startDate, trial.startTime)}</p>
-<p><strong>Trial Length:</strong> ${trial.trialLength} days</p>
-<p><strong class="countdown-label"></strong> <span class="countdown-text" id="countdown-${trial.id}"></span></p>
-</div>
-${trial.notes ? `<p class="item-card-notes"><strong>Notes:</strong> ${trial.notes}</p>` : ''}
-<div class="item-card-actions">
-${trial.cancellationLink && !trial.isCanceled ? `<a href="${trial.cancellationLink}" target="_blank" class="action-button cancel-link">Go to Cancellation Link</a>` : ''}
-<button class="action-button mark-button ${trial.isCanceled ? 'active' : ''}" data-id="${trial.id}" data-iscanceled="${trial.isCanceled}">
-${trial.isCanceled ? 'Mark as Active' : 'Mark as Canceled'}
-</button>
-<button class="action-button delete-button" data-id="${trial.id}">Delete</button>
-</div>
-`;
-        trialsList.appendChild(trialCard);
-
-        // Get the specific elements for this trial card to pass to the update function
-        const countdownElement = trialCard.querySelector(`#countdown-${trial.id}`);
-        const statusElement = trialCard.querySelector(`#status-${trial.id}`);
-
-        // Initialize and start the countdown for this trial
-        if (countdownElement && statusElement) {
-            updateTrialCountdown(trial.id, trial.startDate, trial.startTime, trial.trialLength, trial.isCanceled, countdownElement, statusElement);
-        }
-
-        // Add event listeners for buttons in the newly created card
-        trialCard.querySelector('.mark-button').addEventListener('click', (e) => {
-            const id = e.target.dataset.id;
-            const isCanceled = e.target.dataset.iscanceled === 'true'; // Convert string to boolean
-            handleMarkAsCanceled(id, isCanceled);
-        });
-
-        trialCard.querySelector('.delete-button').addEventListener('click', (e) => {
-            const id = e.target.dataset.id;
-            handleDeleteTrial(id);
-        });
-    });
+if (trials.length === 0) {
+noTrialsMessage.style.display = 'block';
+trialsList.appendChild(noTrialsMessage);
+return;
+} else {
+noTrialsMessage.style.display = 'none';
 }
+
+// Sort trials: Active trials first (by days remaining), then canceled trials.
+const sortedTrials = trials.sort((a, b) => {
+// Canceled trials always go to the end
+if (a.isCanceled && !b.isCanceled) return 1;
+if (!a.isCanceled && b.isCanceled) return -1;
+
+// For active trials, sort by days remaining (ascending)
+if (!a.isCanceled && !b.isCanceled) {
+const timeA = calculateTimeRemaining(a.startDate, a.startTime, a.trialLength).totalMilliseconds;
+const timeB = calculateTimeRemaining(b.startDate, b.startTime, b.trialLength).totalMilliseconds;
+return timeA - timeB;
+}
+// If both are canceled, or both ended, maintain existing order or sort by name
+return a.serviceName.localeCompare(b.serviceName);
+});
+
+
+sortedTrials.forEach(trial => {
+const trialCard = createTrialCard(trial);
+trialsList.appendChild(trialCard);
+
+// Set up the countdown for active trials
+if (!trial.isCanceled) {
+const countdownElement = trialCard.querySelector(`#countdown-${trial.id}`);
+const statusElement = trialCard.querySelector(`.item-card-status[data-trial-id="${trial.id}"]`);
+if (countdownElement && statusElement) {
+updateTrialCountdown(trial.id, trial.startDate, trial.startTime, trial.trialLength, countdownElement, statusElement);
+}
+} else {
+// For canceled trials, explicitly set the status
+const statusElement = trialCard.querySelector(`.item-card-status[data-trial-id="${trial.id}"]`);
+const countdownElement = trialCard.querySelector(`#countdown-${trial.id}`);
+if (statusElement) {
+statusElement.textContent = 'Canceled';
+statusElement.classList.add('canceled');
+statusElement.classList.remove('active', 'ending-soon', 'ended');
+}
+if (countdownElement) {
+countdownElement.textContent = `Trial was ${trial.trialLength} days`;
+}
+}
+});
+}
+
 
 /**
 * Renders the list of subscriptions.
 * @param {Array<Object>} subscriptions The array of subscription objects from Firestore.
 */
 function renderSubscriptions(subscriptions) {
-    subscriptionsList.innerHTML = ''; // Clear existing subscriptions
+subscriptionsList.innerHTML = ''; // Clear existing subscriptions
 
-    if (subscriptions.length === 0) {
-        noSubscriptionsMessage.style.display = 'block';
-        subscriptionsList.appendChild(noSubscriptionsMessage);
-        return;
-    } else {
-        noSubscriptionsMessage.style.display = 'none';
-    }
+if (subscriptions.length === 0) {
+noSubscriptionsMessage.style.display = 'block';
+subscriptionsList.appendChild(noSubscriptionsMessage);
+return;
+} else {
+noSubscriptionsMessage.style.display = 'none';
+}
 
-    subscriptions.forEach(sub => {
-        const subCard = document.createElement('div');
-        subCard.classList.add('item-card'); // No specific status classes like trials, generally 'ongoing'
-        subCard.innerHTML = `
+subscriptions.forEach(sub => {
+const subCard = document.createElement('div');
+subCard.classList.add('item-card'); // Reuse item-card styling
+subCard.innerHTML = `
 <div class="item-card-header">
 <h3 class="item-card-title">${sub.serviceName}</h3>
 <span class="item-card-status ongoing">Ongoing</span>
 </div>
 <div class="item-card-details">
-<p><strong>Start Date:</strong> ${formatDate(sub.startDate)}</p>
+<p>Started: ${formatDate(sub.startDate)}</p>
 </div>
-${sub.notes ? `<p class="item-card-notes"><strong>Notes:</strong> ${sub.notes}</p>` : ''}
+${sub.notes ? `<p class="item-card-notes">Notes: ${sub.notes}</p>` : ''}
 <div class="item-card-actions">
 <button class="action-button delete-button" data-id="${sub.id}">Delete</button>
 </div>
 `;
-        subscriptionsList.appendChild(subCard);
-
-        // Add event listener for the delete button
-        subCard.querySelector('.delete-button').addEventListener('click', (e) => {
-            const id = e.target.dataset.id;
-            handleDeleteSubscription(id);
-        });
-    });
+subCard.querySelector('.delete-button').addEventListener('click', (e) => handleDeleteSubscription(e.target.dataset.id));
+subscriptionsList.appendChild(subCard);
+});
 }
+
 </script>
 </body>
 </html>
+
